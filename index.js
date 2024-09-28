@@ -72,3 +72,10 @@ app.use("/api/v1/admin",adminRoutes);
 app.use("/api/v1/promo",promoRoutes);
 app.use("/api/v1/mission",missionRoutes);
 app.use("/api/v1/client",clientRoutes);
+
+//home
+app.get("/", (req,res)=>{
+  res.status(200).send({
+    "msg":"Node Server Runing"
+  })
+})
