@@ -1,0 +1,106 @@
+import mongoose from "mongoose";
+
+const missionSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        required: true,
+    },
+    clientId: {
+        type: String,
+    },
+    orderId: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    paymentId: {
+        type: String,
+        // require: true,
+        unique: true,
+    },
+    driverId: {
+        type: String,
+        default: ''
+    },
+    pickupLatitude: {
+        type: Number,
+        require: true
+    },
+    pickupLongitude: {
+        type: Number,
+        require: true
+    },
+    pickupAddress: {
+        type: String
+    },
+    deliveredLatitude: {
+        type: Number,
+    },
+    deliveredLongitude: {
+        type: Number,
+    },
+    deliveredAddress: {
+        type: String
+    },
+    details: {
+        type: String
+    },
+    price: {
+        type: Number
+    },
+    verifiedPickup: {
+        type: Boolean,
+        default: false
+    },
+    verifiedDelivered: {
+        type: Boolean,
+        default: false
+    },
+    payed: {
+        type: Boolean,
+        default: false
+    },
+    phoneClient: {
+        type: String,
+    },
+    nbresPassager: {
+        type: Number
+    },
+    phoneDriver: {
+        type: String,
+    },
+    payedDriverConfirmation: {
+        type: Boolean,
+        default: false
+    },
+    driverDeliveredLatitude: {
+        type: Number,
+    },
+    driverDeliveredLongitude: {
+        type: Number,
+    },
+    ratingBoolean: {
+        type: Boolean,
+        default: false
+    },
+    profileDriver: {
+        type: String,
+        default: ''
+    },
+    nameDriver: {
+        type: String,
+        default: ''
+    },
+    ratingDriver: {
+        type: Number,
+        default: 0
+    },
+    shippingCompletedDriver: {
+        type: Number,
+        default: 0
+    },
+
+}, { timestamps: true })
+
+export const Mission = mongoose.model("Mission", missionSchema);
+export default Mission;
