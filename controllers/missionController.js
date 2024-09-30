@@ -189,7 +189,13 @@ export const getCoordinateMissionController = async (req, res) => {
         const deliveredLatitude = missions.deliveredLatitude;
         const deliveredLongitude = missions.deliveredLongitude;
 
-        res.status(200).json({ driverLatitude: driverLatitude, driverLongitude: driverLongitude, pickupLatitude: pickupLatitude, pickupLongitude: pickupLongitude, deliveredLatitude: deliveredLatitude, deliveredLongitude: deliveredLongitude });
+         const price = missions.price;
+        const distance = missions.distance;
+        const duration = missions.durations;
+
+        res.status(200).json({ driverLatitude: driverLatitude, driverLongitude: driverLongitude, pickupLatitude: pickupLatitude,
+                              pickupLongitude: pickupLongitude, deliveredLatitude: deliveredLatitude, deliveredLongitude: deliveredLongitude,
+                              price : price , distance: distance , duration : duration });
 
     } catch (error) {
         console.log(error)
@@ -215,10 +221,16 @@ export const getCoordinateMissionClientController = async (req, res) => {
         const deliveredLongitude = missions.deliveredLongitude;
         const deliveredAddress = missions.deliveredAddress;
 
-        const clientId = missions.clientId
+        const price = missions.price;
+        const distance = missions.distance;
+        const duration = missions.durations;
+
+        const clientId = missions.clientId;
 
 
-        res.status(200).json({ clientId: clientId, pickupAddress: pickupAddress, deliveredAddress: deliveredAddress, pickupLatitude: pickupLatitude, pickupLongitude: pickupLongitude, deliveredLatitude: deliveredLatitude, deliveredLongitude: deliveredLongitude });
+        res.status(200).json({ clientId: clientId, pickupAddress: pickupAddress, deliveredAddress: deliveredAddress, pickupLatitude: pickupLatitude, 
+                              pickupLongitude: pickupLongitude, deliveredLatitude: deliveredLatitude, deliveredLongitude: deliveredLongitude ,
+                             price : price , distance: distance , duration : duration });
 
     } catch (error) {
         console.log(error)
@@ -261,7 +273,7 @@ export const getPageController = async (req, res) => {
 export const confirmMissionDeliveredAddress = async (req, res) => {
     try {
         const { orderId } = req.params
-        const { latitude, longitude, addressDelivered } = req.body
+        const { latitude, longitude, addressDelivered , price , duration , distance } = req.body
 
         const mission = await Mission.findOne({ orderId })
 
@@ -272,34 +284,16 @@ export const confirmMissionDeliveredAddress = async (req, res) => {
         mission.deliveredLatitude = latitude;
         mission.deliveredLongitude = longitude;
         mission.deliveredAddress = addressDelivered;
+        mission.distance = distance;
+        mission.duration = duration;
+        mission.price = price;
         mission.verifiedDelivered = true;
 
         function deg2rad(deg) {
             return deg * (Math.PI / 180);
         }
 
-        function haversinePrice(lat1, lon1, lat2, lon2) {
-            const earthRadius = 6371;
-            const dLat = deg2rad(lat2 - lat1);
-            const dLon = deg2rad(lon2 - lon1);
-
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-            const distance = earthRadius * c;
-
-            const distanceByMeter = distance * 1000
-
-            const fee = parseInt(distanceByMeter * (100 / 1000) / 1)
-
-            return fee;
-        }
-
-        mission.price = haversinePrice(mission.pickupLatitude, mission.pickupLongitude, mission.deliveredLatitude, mission.deliveredLongitude)
-
-        await mission.save()
+     await mission.save()
 
         res.status(200).send({ Message: "Mission update succesfully" })
 
