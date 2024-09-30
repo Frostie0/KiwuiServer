@@ -46,13 +46,16 @@ const missionSchema = new mongoose.Schema({
         type: String
     },
     price: {
-        type: Number
+        type: Number,
+        default : 0
     },
     distance: {
-        type: Number
+        type: Number,
+        default: 0
     },
     duration: {
-        type: String
+        type: String,
+        default: ''
     },
     verifiedPickup: {
         type: Boolean,
