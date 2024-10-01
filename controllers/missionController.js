@@ -191,7 +191,7 @@ export const getCoordinateMissionController = async (req, res) => {
 
          const price = missions.price;
         const distance = missions.distance;
-        const duration = missions.durations;
+        const duration = missions.duration;
 
         res.status(200).json({ driverLatitude: driverLatitude, driverLongitude: driverLongitude, pickupLatitude: pickupLatitude,
                               pickupLongitude: pickupLongitude, deliveredLatitude: deliveredLatitude, deliveredLongitude: deliveredLongitude,
@@ -223,7 +223,7 @@ export const getCoordinateMissionClientController = async (req, res) => {
 
         const price = missions.price;
         const distance = missions.distance;
-        const duration = missions.durations;
+        const duration = missions.duration;
 
         const clientId = missions.clientId;
 
