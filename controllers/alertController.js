@@ -314,7 +314,8 @@ export const postCommentary = async (req, res) => {
                 userId: userId,
                 commentId: commentId,
                 comment: comment,
-                name: name
+                name: name,
+                 type: 'Client'
             }
 
             alert.commentary.push(commentary)
@@ -330,7 +331,8 @@ export const postCommentary = async (req, res) => {
                 userId: userId,
                 commentId: commentId,
                 comment: comment,
-                name: name
+                name: name,
+                type: type
             }
 
             alert.commentary.push(commentary)
@@ -347,7 +349,8 @@ export const postCommentary = async (req, res) => {
                 userId: userId,
                 commentId: commentId,
                 comment: comment,
-                name: name
+                name: name,
+                 type: type
             }
 
             alert.commentary.push(commentary)
