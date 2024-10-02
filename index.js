@@ -5,7 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
-// import WebSocketServer from './config/webSocket.js';
+import WebSocketServer from './config/webSocket.js';
 
 
 //dot env config
@@ -15,7 +15,7 @@ dotenv.config();
 connectDB();
 
 //webSocket connection
-// WebSocketServer();
+WebSocketServer();
 
 
 
