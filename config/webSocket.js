@@ -10,7 +10,7 @@ let expo = new Expo();
 const WebSocketServer = () => {
 
 
-       const PORTSOCKET = process.env.PORTSOCKET;
+   const PORTSOCKET = process.env.PORTSOCKET;
 
     io.listen(PORTSOCKET, () => {
         console.log(`Le serveur WebSocket est en cours d'exécution sur le port ${PORTSOCKET}`);
