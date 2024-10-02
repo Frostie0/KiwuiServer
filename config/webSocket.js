@@ -10,7 +10,7 @@ let expo = new Expo();
 const WebSocketServer = () => {
 
     const io = new Server({ cors: { origin: "http://localhost:3000" } });
-    io.listen(4000);
+    io.listen(8000);
     const connectedUsers = new Set();
     
 
