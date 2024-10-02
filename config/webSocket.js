@@ -11,7 +11,7 @@ const WebSocketServer = () => {
 
     const io = new Server({
     cors: {
-        origin: "http://localhost:4000", // Remplace par l'URL de ton site web
+        origin: "http://localhost:3000", // Remplace par l'URL de ton site web
         methods: ["GET", "POST"]
     }
 });
