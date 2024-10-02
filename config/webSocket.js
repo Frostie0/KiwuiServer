@@ -9,8 +9,14 @@ let expo = new Expo();
 
 const WebSocketServer = () => {
 
-    const io = new Server({ cors: { origin: "http://localhost:3000" } });
-    io.listen(8000);
+    const io = new Server({
+    cors: {
+        origin: "http://localhost:4000", // Remplace par l'URL de ton site web
+        methods: ["GET", "POST"]
+    }
+});
+io.listen(8000);
+    
     const connectedUsers = new Set();
     
 
