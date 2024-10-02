@@ -9,16 +9,13 @@ let expo = new Expo();
 
 const WebSocketServer = () => {
 
-//     const io = new Server({
-//     cors: {
-//         origin: "http://localhost:3000", // Remplace par l'URL de ton site web
-//         methods: ["GET", "POST"]
-//     }
-// });
-// io.listen(4000);
 
-     const io = new Server({ cors: { origin: "http://localhost:3000" } });
-    io.listen(10000);
+       const PORTSOCKET = process.env.PORTSOCKET;
+
+    io.listen(PORTSOCKET, () => {
+        console.log(`Le serveur WebSocket est en cours d'exécution sur le port ${PORTSOCKET}`);
+    });
+
     
     const connectedUsers = new Set();
     
