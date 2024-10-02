@@ -1,6 +1,7 @@
 import express from 'express';
 import { Server } from 'socket.io';
 import http from 'http';
+import cors from 'cors';
 import Driver from '../models/Driver.js';
 import Mission from '../models/Mission.js';
 import Message from '../models/Message.js';
@@ -10,6 +11,12 @@ import Client from '../models/Client.js';
 let expo = new Expo();
 
 const app = express();
+app.use(cors({
+    origin: "http://localhost:3000", // Remplace par l'URL de ton site web
+    methods: ["GET", "POST"],
+    credentials: true
+}));
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
@@ -149,6 +156,7 @@ server.listen(PORT, () => {
 });
 
 export default WebSocketServer;
+
 
 
 
