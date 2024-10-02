@@ -2,7 +2,7 @@ import express from 'express';
 import { Server } from 'socket.io';
 import http from 'http';
 import cors from 'cors';
-import Driver from '../models/Driver.js';
+import Driver from '../models/Driver.js'
 import Mission from '../models/Mission.js';
 import Message from '../models/Message.js';
 import { Expo } from 'expo-server-sdk';
@@ -11,21 +11,30 @@ import Client from '../models/Client.js';
 let expo = new Expo();
 
 const app = express();
+
 app.use(cors({
     origin: "http://localhost:3000", // Remplace par l'URL de ton site web
-    methods: ["GET", "POST"],
     credentials: true
 }));
 
 const server = http.createServer(app);
+
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:3000", // Remplace par l'URL de ton site web
-        methods: ["GET", "POST"]
     }
 });
 
+
+const PORT = process.env.WEBSOCKET_PORT || 8000;
+
+server.listen(PORT, () => {
+    console.log(`Le serveur WebSocket est en cours d'exécution sur le port ${PORT}`);
+});
+
+
 const connectedUsers = new Set();
+
 
 io.on('connection', (socket) => {
     console.log('Client connected');
@@ -149,15 +158,6 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => console.log('Client disconnected'));
 });
-
-const PORT = 8000;
-server.listen(PORT, () => {
-    console.log(`Serveur en écoute sur le port ${PORT}`);
-});
-
-export default WebSocketServer;
-
-
 
 
 // import { Server } from 'socket.io';
