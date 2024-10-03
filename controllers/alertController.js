@@ -32,7 +32,7 @@ export const postAlert = async (req, res) => {
     try {
         const { latitude, longitude, title, description, alertId, userId } = req.body;
 
-        if (!latitude || !longitude || !title || !alertId) {
+        if (!latitude || !longitude || !title || !alertId || !userId) {
             return res.status(400).send({ message: "Valeurs requises manquantes" });
         }
 
