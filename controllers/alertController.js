@@ -33,26 +33,34 @@ export const postAlert = async (req, res) => {
         const { latitude, longitude, title, description, alertId, userId } = req.body;
 
         if (!latitude || !longitude || !title || !alertId) {
-            return res.status(400).send({ message: "Missing required values" });
+            return res.status(400).send({ message: "Valeurs requises manquantes" });
         }
 
         const alerts = await Alert.find();
 
-        for (let existingAlert of alerts) {
+        const alertsFiltered = alerts.filter((item) => item.title === title);
+        
+        const distanceLimits = {
+            "Tir": 300,
+            "Kidnapping": 500,
+            "Blocked": 100
+        };
+        
+        for (let existingAlert of alertsFiltered) {
             const distance = haversine(
                 latitude, longitude,
                 existingAlert.coordinate.latitude, existingAlert.coordinate.longitude
             );
-
-            if (distance <= 300) {
-                return res.status(409).send({ message: "An alert already exists within 300 meters of the provided coordinates" });
+        
+            // Vérifiez si le titre existe dans les limites de distance
+            if (distanceLimits[title] && distance <= distanceLimits[title]) {
+                return res.status(409).send({ message: `Une alerte de type '${title}' existe déjà à l'intérieur de ${distanceLimits[title]} mètres des coordonnées fournies` });
             }
         }
-
+        
         const alert = await Alert.findOne({ alertId });
 
         if (!alert) {
-
             const newAlert = new Alert({
                 userId: userId,
                 alertId: alertId,
@@ -74,18 +82,15 @@ export const postAlert = async (req, res) => {
                 );
 
                 if (distance <= 300) {
-
                     if (payedDriverConfirmation === false) {
-
                         const client = await Client.findOne({ clientId: clientId })
 
                         if (client.notificationStatut && client.tokenClient.length > 0) {
-
                             let message = {
                                 to: client.tokenClient,
                                 sound: 'default',
                                 title: title,
-                                body:"Une nouvelle alerte a ete creer pres de votre lieu d'arriver.",
+                                body: "Une nouvelle alerte a été créée près de votre lieu d'arrivée.",
                                 data: { withSome: 'data' },
                             };
 
@@ -93,42 +98,37 @@ export const postAlert = async (req, res) => {
                         }
 
                         if (driverId !== '') {
-
                             const driver = await Driver.findOne({ driverId: driverId })
 
                             if (driver.notificationStatut && driver.tokenClient.length > 0) {
-
                                 let message = {
                                     to: driver.tokenClient,
                                     sound: 'default',
                                     title: title,
-                                    body:"Une nouvelle alerte a ete creer pres de votre lieu d'arriver.",
+                                    body: "Une nouvelle alerte a été créée près de votre lieu d'arrivée.",
                                     data: { withSome: 'data' },
                                 };
 
                                 await expo.sendPushNotificationsAsync([message]);
                             }
                         }
-
                     }
                 }
-
-
             }
-
 
             await newAlert.save();
 
-            return res.status(201).send({ Message: "Alert created", newAlert });
+            return res.status(201).send({ message: "Alerte créée", newAlert });
         } else {
-            return res.status(409).send({ message: "Alert with this ID already exists" });
+            return res.status(409).send({ message: "Une alerte avec cet ID existe déjà" });
         }
 
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message: "Alert don't send" });
+        res.status(500).send({ message: "L'alerte n'a pas pu être envoyée" });
     }
 };
+
 
 
 export const getAlert = async (req, res) => {
