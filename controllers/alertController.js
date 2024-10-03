@@ -41,8 +41,8 @@ export const postAlert = async (req, res) => {
         const alertsFiltered = alerts.filter((item) => item.title === title);
         
         const distanceLimits = {
-            "Tir": 300,
-            "Kidnapping": 500,
+            "Tir": 400,
+            "Kidnapping": 600,
             "Blocked": 100
         };
         
