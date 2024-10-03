@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const commentaryScheama = new mongoose.Schema({
     commentId: {
         type: String,
-        require: true,
         unique: true,
     },
     name: {
@@ -39,7 +38,6 @@ const commentaryScheama = new mongoose.Schema({
     ],
     userId: {
         type: String,
-        require: true
     },
     type: {
         type: String,
