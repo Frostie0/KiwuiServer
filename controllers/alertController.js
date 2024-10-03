@@ -25,7 +25,7 @@ function haversine(lat1, lon1, lat2, lon2) {
 
     const distance = earthRadius * c;
 
-    return distance;
+    return distance * 1000;
 }
 
 export const postAlert = async (req, res) => {
