@@ -48,12 +48,12 @@ const commentaryScheama = new mongoose.Schema({
 const AlertSchema = new mongoose.Schema({
     alertId: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
     },
     userId: {
         type: String,
-        require: true,
+        required: true,
     },
     title: {
         type: String
@@ -61,11 +61,11 @@ const AlertSchema = new mongoose.Schema({
     coordinate: {
         latitude: {
             type: Number,
-            require: true
+            required: true
         },
         longitude: {
             type: Number,
-            require: true
+            required: true
         }
     },
     description: {
