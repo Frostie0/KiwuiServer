@@ -271,6 +271,9 @@ export const updateDocumentController = async (req, res) => {
         if (type === 'Matricule') {
             driver.matricule = image;
         }
+        if (type === 'CaseJustice') {
+            driver.caseJustice = image;
+        }
 
         await driver.save();
 
