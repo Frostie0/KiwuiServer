@@ -53,6 +53,10 @@ const driverSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    caseJustice:{
+        type: String,
+        default: ''
+    },
     rating: {
         type: Number,
         default: 0
