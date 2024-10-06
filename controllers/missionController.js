@@ -45,7 +45,7 @@ export const takeMissionController = async (req, res) => {
             return res.status(404).json({ message: "No driver found" });
         }
 
-        const existingMission = await Mission.findOne({ driverId: driverId && payedDriverConfirmation === false });
+        const existingMission = await Mission.findOne({ driverId: driverId, payedDriverConfirmation: false });
 
         if (existingMission) {
             return res.status(400).json({ message: "Driver has already taken a mission" });
