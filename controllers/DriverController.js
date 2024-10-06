@@ -29,8 +29,6 @@ export const uploadDriverImageController = async (req, res) => {
             }
         }).end(file.buffer);
 
-        res.status(200).send('Image upload succesfully');
-
     } catch (error) {
         console.error('Error:', error);
         res.sendStatus(500);
