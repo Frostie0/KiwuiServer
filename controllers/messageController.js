@@ -40,12 +40,12 @@ export const getTchatController = async (req, res) => {
             ]
         })
         // Aplatir les messages pour obtenir un tableau unique de messages
-        const messages = messagesData.flatMap(message => message.messages || []);
+        // const messages = messagesData.flatMap(message => message.messages || []);
 
-        // Trier les messages par timestamp
-        const sortedMessages = messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        // // Trier les messages par timestamp
+        // const sortedMessages = messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-        return res.status(200).send({ messages: sortedMessages });
+        return res.status(200).send({ messages: messagesData });
 
     } catch (error) {
         console.error("Error retrieving messages:", error);
