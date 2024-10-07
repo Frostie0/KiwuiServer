@@ -144,8 +144,13 @@ io.on('connection', (socket) => {
     try {
         const { senderId, receverId, message, type, receverType } = data;
 
-        // Créez une clé de conversation unique
+        if (receverType === 'Client') {
+        const conversationId = [receverId, senderId].sort().join('-');
+        }
+
+         if (receverType === 'Driver') {
         const conversationId = [senderId, receverId].sort().join('-');
+        }
 
         let messagesData = await Message.findOneAndUpdate(
             { conversationId },
