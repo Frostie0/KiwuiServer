@@ -149,7 +149,8 @@ io.on('connection', (socket) => {
 
         let messagesData = await Message.findOneAndUpdate(
             { conversationId },
-            { $push: { messages: { message, sender: senderId, type } } },
+            { senderId, receverId,
+             $push: { messages: { message, sender: senderId, type } } },
             { upsert: true, new: true }
         );
 
