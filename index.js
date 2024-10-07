@@ -183,7 +183,7 @@ io.on('connection', (socket) => {
             }
 
             io.to(receverId).emit('receiveMessage', messagesData);
-            console.log("Message envoyé au client avec l'ID:", receverId, messagesData);
+            // console.log("Message envoyé au client avec l'ID:", receverId, messagesData);
             
         } catch (error) {
             console.log('Erreur lors de la gestion du message:', error);
