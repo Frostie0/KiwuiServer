@@ -123,7 +123,7 @@ io.on('connection', (socket) => {
 
             io.emit('missions', missions.filter((mission) => {
                 const distance = haversine(latitude, longitude, mission.pickupLatitude, mission.pickupLongitude);
-                return distance <= 5;
+                return distance <= 5 || mission.driverId === id;
             }));
         } catch (error) {
             console.log('Erreur lors de la gestion de la localisation:', error);
