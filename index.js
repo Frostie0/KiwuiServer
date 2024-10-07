@@ -87,7 +87,7 @@ io.on('connection', (socket) => {
     socket.on('sendLocation', async (data) => {
         try {
             const { id, latitude, longitude, roomId } = data;
-            console.log('Localisation reçue:', data);
+            // console.log('Localisation reçue:', data);
 
             function deg2rad(deg) {
                 return deg * (Math.PI / 180);
@@ -183,6 +183,8 @@ io.on('connection', (socket) => {
             }
 
             io.to(receverId).emit('receiveMessage', messagesData);
+            console.log("Message envoyé au client avec l'ID:", receverId, messagesData);
+            
         } catch (error) {
             console.log('Erreur lors de la gestion du message:', error);
         }
