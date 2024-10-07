@@ -140,55 +140,58 @@ io.on('connection', (socket) => {
         console.log('Utilisateur déconnecté:', userId, 'Utilisateurs connectés:', connectedUsers);
     });
 
-    socket.on('sendMessage', async (data) => {
-        try {
-            const { senderId, receverId, message, type, receverType } = data;
+  socket.on('sendMessage', async (data) => {
+    try {
+        const { senderId, receverId, message, type, receverType } = data;
 
-            let messagesData = await Message.findOneAndUpdate(
-                { senderId, receverId },
-                { $push: { messages: { message, sender: senderId, type } } },
-                { upsert: true, new: true }
-            );
+        // Créez une clé de conversation unique
+        const conversationId = [senderId, receverId].sort().join('-');
 
-            if (receverType === 'Client') {
-                const client = await Client.findOne({ clientId: receverId });
+        let messagesData = await Message.findOneAndUpdate(
+            { conversationId },
+            { $push: { messages: { message, sender: senderId, type } } },
+            { upsert: true, new: true }
+        );
 
-                if (!connectedUsers.has(receverId) && client.notificationStatut && client.tokenClient.length > 0) {
-                    let messageContent = {
-                        to: client.tokenClient,
-                        sound: 'default',
-                        title: 'Votre chauffeur',
-                        body: message,
-                        data: { withSome: 'data' },
-                    };
+        if (receverType === 'Client') {
+            const client = await Client.findOne({ clientId: receverId });
 
-                    await expo.sendPushNotificationsAsync([messageContent]);
-                }
+            if (!connectedUsers.has(receverId) && client.notificationStatut && client.tokenClient.length > 0) {
+                let messageContent = {
+                    to: client.tokenClient,
+                    sound: 'default',
+                    title: 'Votre chauffeur',
+                    body: message,
+                    data: { withSome: 'data' },
+                };
+
+                await expo.sendPushNotificationsAsync([messageContent]);
             }
-
-            if (receverType === 'Driver') {
-                const driver = await Driver.findOne({ driverId: receverId });
-
-                if (!connectedUsers.has(receverId) && driver.notificationStatut && driver.tokenClient.length > 0) {
-                    let messageContent = {
-                        to: driver.tokenClient,
-                        sound: 'default',
-                        title: 'Votre Client',
-                        body: message,
-                        data: { withSome: 'data' },
-                    };
-
-                    await expo.sendPushNotificationsAsync([messageContent]);
-                }
-            }
-
-            io.to(receverId).emit('receiveMessage', messagesData);
-            // console.log("Message envoyé au client avec l'ID:", receverId, messagesData);
-            
-        } catch (error) {
-            console.log('Erreur lors de la gestion du message:', error);
         }
-    });
+
+        if (receverType === 'Driver') {
+            const driver = await Driver.findOne({ driverId: receverId });
+
+            if (!connectedUsers.has(receverId) && driver.notificationStatut && driver.tokenClient.length > 0) {
+                let messageContent = {
+                    to: driver.tokenClient,
+                    sound: 'default',
+                    title: 'Votre Client',
+                    body: message,
+                    data: { withSome: 'data' },
+                };
+
+                await expo.sendPushNotificationsAsync([messageContent]);
+            }
+        }
+
+        io.to(receverId).emit('receiveMessage', messagesData);
+
+    } catch (error) {
+        console.log('Erreur lors de la gestion du message:', error);
+    }
+});
+
 
     socket.on('disconnect', () => {
         console.log('Client déconnecté:', socket.id);
