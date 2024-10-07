@@ -33,15 +33,22 @@ export const getMessageController = async (req, res) => {
             return res.status(400).send({ message: "senderId and ReceverId are required" });
         }
 
-        const messages = await Message.find({ 
+        const messagesData = await Message.find({ 
             $or: [
                 { senderId, receverId },
                 { senderId: receverId, receverId: senderId }
             ]
-        }).sort({ createdAt: 1 });
+        })
 
+         if (!messagesData) {
+            return res.status(200).send({ messages: [] }); // Pas de messages trouvés
+        }
 
-        return res.status(200).send({ messages });
+        // Trier les messages par timestamp
+        const sortedMessages = messagesData.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        return res.status(200).send({ messages: sortedMessages });
+
 
     } catch (error) {
         console.error("Error retrieving messages:", error);
