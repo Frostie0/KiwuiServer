@@ -24,37 +24,35 @@ export const getMessageController = async (req, res) => {
     }
 };
 
- export const getTchatController = async (req, res) => {
+export const getTchatController = async (req, res) => {
     try {
-
         const { senderId, receverId } = req.query;
 
         if (!senderId || !receverId) {
             return res.status(400).send({ message: "senderId and ReceverId are required" });
         }
 
-        const messagesData = await Message.find({ 
+        // Rechercher les messages correspondant à la conversation
+       const messagesData = await Message.find({ 
             $or: [
                 { senderId, receverId },
                 { senderId: receverId, receverId: senderId }
             ]
         })
-
-         if (!messagesData) {
-            return res.status(200).send({ messages: [] }); // Pas de messages trouvés
-        }
+        // Aplatir les messages pour obtenir un tableau unique de messages
+        const messages = messagesData.flatMap(message => message.messages || []);
 
         // Trier les messages par timestamp
-        const sortedMessages = messagesData.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        const sortedMessages = messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
         return res.status(200).send({ messages: sortedMessages });
-
 
     } catch (error) {
         console.error("Error retrieving messages:", error);
         return res.status(500).send({ message: "Internal Server Error" });
     }
 };
+
 
 // export const getTchatController = async (req, res) => {
 //     try {
