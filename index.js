@@ -74,7 +74,7 @@ const io = new Server(server, {
 });
 
 // WebSocket logique
-const connectedUsers = new Set();
+ const connectedUsers = new Map();
 
 io.on('connection', (socket) => {
     console.log('Client connecté:', socket.id);
@@ -131,74 +131,90 @@ io.on('connection', (socket) => {
     });
 
     socket.on('userConnected', (userId) => {
-        connectedUsers.add(userId);
+        connectedUsers.set(userId, socket.id); // Associer userId à socket.id
         console.log('Utilisateur connecté:', userId, 'Utilisateurs connectés:', connectedUsers);
     });
 
-    socket.on('userDisconnected', (userId) => {
-        connectedUsers.delete(userId);
-        console.log('Utilisateur déconnecté:', userId, 'Utilisateurs connectés:', connectedUsers);
+    // Gestion de la déconnexion de l'utilisateur
+    socket.on('disconnect', () => {
+        // Trouver l'utilisateur déconnecté par son socket.id
+        for (let [userId, socketId] of connectedUsers.entries()) {
+            if (socketId === socket.id) {
+                connectedUsers.delete(userId); // Supprimer l'utilisateur déconnecté
+                console.log('Utilisateur déconnecté:', userId, 'Utilisateurs connectés:', connectedUsers);
+                break;
+            }
+        }
     });
 
-  socket.on('sendMessage', async (data) => {
-    try {
-        const { senderId, receverId, message, type, receverType } = data;
+    // Envoi de message
+    socket.on('sendMessage', async (data) => {
+        try {
+            const { senderId, receverId, message, type, receverType } = data;
 
-          let conversationId;
+            let conversationId;
 
-        // Définir conversationId en fonction du type de receveur
-        if (receverType === 'Client') {
-            conversationId = [receverId, senderId].sort().join('-'); // Pour les clients, on inverse l'ordre
-        } else if (receverType === 'Driver') {
-            conversationId = [senderId, receverId].sort().join('-'); // Pour les conducteurs, on laisse l'ordre tel quel
-        }
-
-        let messagesData = await Message.findOneAndUpdate(
-            { conversationId },
-            { senderId, receverId,
-             $push: { messages: { message, sender: senderId, type } } },
-            { upsert: true, new: true }
-        );
-
-        if (receverType === 'Client') {
-            const client = await Client.findOne({ clientId: receverId });
-
-            if (!connectedUsers.has(receverId) && client.notificationStatut && client.tokenClient.length > 0) {
-                let messageContent = {
-                    to: client.tokenClient,
-                    sound: 'default',
-                    title: 'Votre chauffeur',
-                    body: message,
-                    data: { withSome: 'data' },
-                };
-
-                await expo.sendPushNotificationsAsync([messageContent]);
+            // Définir conversationId en fonction du type de receveur
+            if (receverType === 'Client') {
+                conversationId = [receverId, senderId].sort().join('-'); // Pour les clients, on inverse l'ordre
+            } else if (receverType === 'Driver') {
+                conversationId = [senderId, receverId].sort().join('-'); // Pour les conducteurs, on laisse l'ordre tel quel
             }
-        }
 
-        if (receverType === 'Driver') {
-            const driver = await Driver.findOne({ driverId: receverId });
+            let messagesData = await Message.findOneAndUpdate(
+                { conversationId },
+                { senderId, receverId,
+                $push: { messages: { message, sender: senderId, type } } },
+                { upsert: true, new: true }
+            );
 
-            if (!connectedUsers.has(receverId) && driver.notificationStatut && driver.tokenClient.length > 0) {
-                let messageContent = {
-                    to: driver.tokenClient,
-                    sound: 'default',
-                    title: 'Votre Client',
-                    body: message,
-                    data: { withSome: 'data' },
-                };
+            // Envoyer une notification push si le récepteur est un client et non connecté
+            if (receverType === 'Client') {
+                const client = await Client.findOne({ clientId: receverId });
 
-                await expo.sendPushNotificationsAsync([messageContent]);
+                if (!connectedUsers.has(receverId) && client.notificationStatut && client.tokenClient.length > 0) {
+                    let messageContent = {
+                        to: client.tokenClient,
+                        sound: 'default',
+                        title: 'Votre chauffeur',
+                        body: message,
+                        data: { withSome: 'data' },
+                    };
+
+                    await expo.sendPushNotificationsAsync([messageContent]);
+                }
             }
+
+            // Envoyer une notification push si le récepteur est un conducteur et non connecté
+            if (receverType === 'Driver') {
+                const driver = await Driver.findOne({ driverId: receverId });
+
+                if (!connectedUsers.has(receverId) && driver.notificationStatut && driver.tokenClient.length > 0) {
+                    let messageContent = {
+                        to: driver.tokenClient,
+                        sound: 'default',
+                        title: 'Votre Client',
+                        body: message,
+                        data: { withSome: 'data' },
+                    };
+
+                    await expo.sendPushNotificationsAsync([messageContent]);
+                }
+            }
+
+            // Trouver le socketId correspondant au receverId
+            const socketId = connectedUsers.get(receverId);
+            if (socketId) {
+                // Envoyer le message au socketId correspondant
+                io.to(socketId).emit('receiveMessage', messagesData);
+            } else {
+                console.log('Le récepteur n\'est pas connecté');
+            }
+
+        } catch (error) {
+            console.log('Erreur lors de la gestion du message:', error);
         }
-
-        io.emit('receiveMessage', messagesData);
-
-    } catch (error) {
-        console.log('Erreur lors de la gestion du message:', error);
-    }
-});
-
+    });
 
     socket.on('disconnect', () => {
         console.log('Client déconnecté:', socket.id);
