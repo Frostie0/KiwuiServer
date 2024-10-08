@@ -192,7 +192,7 @@ io.on('connection', (socket) => {
             }
         }
 
-        io.to(receverId).emit('receiveMessage', messagesData);
+        io.emit('receiveMessage', messagesData);
 
     } catch (error) {
         console.log('Erreur lors de la gestion du message:', error);
