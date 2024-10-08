@@ -144,12 +144,13 @@ io.on('connection', (socket) => {
     try {
         const { senderId, receverId, message, type, receverType } = data;
 
-        if (receverType === 'Client') {
-        const conversationId = [receverId, senderId].sort().join('-');
-        }
+          let conversationId;
 
-         if (receverType === 'Driver') {
-        const conversationId = [senderId, receverId].sort().join('-');
+        // Définir conversationId en fonction du type de receveur
+        if (receverType === 'Client') {
+            conversationId = [receverId, senderId].sort().join('-'); // Pour les clients, on inverse l'ordre
+        } else if (receverType === 'Driver') {
+            conversationId = [senderId, receverId].sort().join('-'); // Pour les conducteurs, on laisse l'ordre tel quel
         }
 
         let messagesData = await Message.findOneAndUpdate(
