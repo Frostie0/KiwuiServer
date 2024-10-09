@@ -118,8 +118,8 @@ export const completeMissionController = async (req, res) => {
 
         const paymentIdMission = mission.paymentId;
         
-console.log('paymentId': paymentId);
-        console.log('paymentIdMission':paymentIdMission)
+console.log('paymentId', paymentId);
+        console.log('paymentIdMission',paymentIdMission)
         
         if (String(paymentIdMission) === String(paymentId)) {
             mission.payedDriverConfirmation = true;
