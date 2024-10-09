@@ -171,7 +171,7 @@ export const getCoordinateMissionController = async (req, res) => {
 
         console.log(driverId)
 
-        const missions = await Mission.findOne({ driverId: driverId })
+        const missions = await Mission.findOne({ driverId: driverId, payedDriverConfirmation: false })
         const driver = await Driver.findOne({ driverId })
 
         if (!missions || missions.length === 0) {
