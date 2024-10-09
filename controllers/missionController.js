@@ -103,7 +103,6 @@ export const completeMissionController = async (req, res) => {
     try {
         const { driverId, paymentId } = req.body;
 
-        console.log(paymentId);
         
         const driver = await Driver.findOne({ driverId });
 
@@ -119,7 +118,7 @@ export const completeMissionController = async (req, res) => {
 
         const paymentIdMission = mission.paymentId;
 
-        if (paymentIdMission === paymentId) {
+        if (String(paymentIdMission) === String(paymentId)) {
             mission.payedDriverConfirmation = true;
             mission.driverDeliveredLatitude = driver.latitude;
             mission.driverDeliveredLongitude = driver.longitude;
@@ -156,7 +155,6 @@ export const completeMissionController = async (req, res) => {
             return res.status(200).json({ mission, driver });
         } else {
             return res.status(400).json({ message: "Payment ID does not match" });
-            console.log({ message: "Payment ID does not match" })
         }
 
     } catch (error) {
