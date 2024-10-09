@@ -110,16 +110,14 @@ export const completeMissionController = async (req, res) => {
             return res.status(404).json({ message: "No driver found" });
         }
 
-        const mission = await Mission.findOne({ driverId });
+        const mission = await Mission.findOne({ driverId, payedDriverConfirmation: false });
 
         if (!mission) {
             return res.status(404).json({ message: "No mission found" });
         }
 
         const paymentIdMission = mission.paymentId;
-        
-console.log('paymentId', paymentId);
-        console.log('paymentIdMission',paymentIdMission)
+    
         
         if (String(paymentIdMission) === String(paymentId)) {
             mission.payedDriverConfirmation = true;
@@ -145,12 +143,12 @@ console.log('paymentId', paymentId);
             const receiverId = mission.clientId;
 
             // Suppression des messages trouvés
-            await Message.deleteMany({
-                $or: [
-                    { senderId, receiverId },
-                    { senderId: receiverId, receiverId: senderId }
-                ]
-            });
+            // await Message.deleteMany({
+            //     $or: [
+            //         { senderId, receiverId },
+            //         { senderId: receiverId, receiverId: senderId }
+            //     ]
+            // });
 
             await driver.save();
             await mission.save();
