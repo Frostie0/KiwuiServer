@@ -140,7 +140,7 @@ socket.on('fetchMission', async (data) => {
             console.log(`Mission avec orderId ${orderId} non trouvée.`);
             return;
         }
-
+console.log(mission.driverMissionMap);
 
         if (Array.isArray(mission.driverMissionMap)) {
             socket.emit('sendDriverMission', mission.driverMissionMap.map((item) => {
