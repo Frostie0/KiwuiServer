@@ -201,12 +201,18 @@ export const registerTokenController = async (req, res) => {
 }
 
 export const searchClientDriverTaxiController = async (req, res) => {
-  const { clientId, orderId, paymentId, price, pickup, delivered } = req.body;
+  const { clientId, orderId, paymentId, price, nbresPassager, pickup, delivered } = req.body;
 
   try {
     const client = await Client.findOne({ clientId: clientId });
     if (!client) {
       return res.status(404).send({ message: 'Aucun client trouvé avec cet identifiant client.' });
+    }
+
+    if (client.balance < 50) {
+      return res.status(403).send({ message: 'Votre solde doit être d'au moins 50 gourdes pour couvrir les frais de dédommagement
+        en cas d'annulation d'une mission après plus de 2 minutes.
+        Veuillez ajouter des fonds pour continuer à utiliser le service.' });
     }
 
     const existingMission = await Mission.findOne({ clientId: clientId, payedDriverConfirmation: false });
@@ -221,12 +227,15 @@ export const searchClientDriverTaxiController = async (req, res) => {
 
 
     const addressDelivered = delivered.addressDelivered;
-    const latitudeDelivered = delivered.latitude;
-    const longitudeDelivered = delivered.longitude;
+    // const latitudeDelivered = delivered.latitude;
+    // const longitudeDelivered = delivered.longitude;
 
     const addressPickup = pickup.addressClient;
     const latitudePickup = pickup.latitude;
     const longitudePickup = pickup.longitude;
+
+  const price = price;
+  const nbresPassager = nbresPassager;
 
     const newMission = {
       type: 'Transport',
@@ -237,10 +246,11 @@ export const searchClientDriverTaxiController = async (req, res) => {
       pickupLatitude: latitudePickup,
       pickupLongitude: longitudePickup,
       pickupAddress: addressPickup,
-      deliveredLatitude: latitudeDelivered,
-      deliveredLongitude: longitudeDelivered,
+      // deliveredLatitude: latitudeDelivered,
+      // deliveredLongitude: longitudeDelivered,
       deliveredAddress: addressDelivered,
       price: price,
+      nbresPassager: nbresPassager
     };
 
     await Mission.create(newMission);
