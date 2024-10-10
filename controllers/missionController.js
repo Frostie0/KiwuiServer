@@ -321,6 +321,14 @@ export const confirmMissionPickupAddress = async (req, res) => {
         mission.pickupAddress = addressPickup;
         mission.verifiedPickup = true;
 
+        mission.verifiedDelivered = true;
+        mission.payed = true;
+
+         const transaction = await Transaction.create({
+            id: mission.clientId, orderId: orderId, amount: mission.price, statut: 'Successfully'
+            , typePayment: 'Cash', typeTransaction: 'Mission', transactionId: Math.floor(0 + Math.random() * 100000000),
+        });
+        
         await mission.save()
 
         res.status(200).send({ Message: "Mission update succesfully" })
