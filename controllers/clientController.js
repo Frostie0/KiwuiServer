@@ -227,8 +227,8 @@ export const searchClientDriverTaxiController = async (req, res) => {
 
 
     const addressDelivered = delivered.addressDelivered;
-    // const latitudeDelivered = delivered.latitude;
-    // const longitudeDelivered = delivered.longitude;
+    const latitudeDelivered = delivered.latitude;
+    const longitudeDelivered = delivered.longitude;
 
     const addressPickup = pickup.addressClient;
     const latitudePickup = pickup.latitude;
@@ -246,8 +246,8 @@ export const searchClientDriverTaxiController = async (req, res) => {
       pickupLatitude: latitudePickup,
       pickupLongitude: longitudePickup,
       pickupAddress: addressPickup,
-      // deliveredLatitude: latitudeDelivered,
-      // deliveredLongitude: longitudeDelivered,
+      deliveredLatitude: latitudeDelivered,
+      deliveredLongitude: longitudeDelivered,
       deliveredAddress: addressDelivered,
       price: price,
       nbresPassager: nbresPassager
