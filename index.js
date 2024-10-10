@@ -130,6 +130,23 @@ io.on('connection', (socket) => {
         }
     });
 
+      socket.on('fetchMission', async (data) => {
+        try {
+            const { orderId } = data;
+            
+            const mission = await Mission.findOne({ orderId: orderId });
+
+            // io.emit('sendDriverMission', mission.map((item) => {
+            //     return{
+            //         item.driverMap
+            //     }
+            // }));
+            
+        } catch (error) {
+            console.log('Erreur lors de la gestion de la localisation:', error);
+        }
+    });
+
     socket.on('userConnected', (userId) => {
         connectedUsers.set(userId, socket.id); // Associer userId à socket.id
         console.log('Utilisateur connecté:', userId, 'Utilisateurs connectés:', connectedUsers);
