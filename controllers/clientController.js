@@ -210,9 +210,7 @@ export const searchClientDriverTaxiController = async (req, res) => {
     }
 
     if (client.balance < 50) {
-      return res.status(403).send({ message: "Votre solde doit être d'au moins 50 gourdes pour couvrir les frais de dédommagement
-        en cas d'annulation d'une mission après plus de 2 minutes.
-        Veuillez ajouter des fonds pour continuer à utiliser le service." });
+      return res.status(403).send({ message: "Votre solde doit être d/au moins 50 gourdes pour couvrir les frais de dédommagement en cas d/annulation d/une mission après plus de 2 minutes. Veuillez ajouter des fonds pour continuer à utiliser le service." });
     }
 
     const existingMission = await Mission.findOne({ clientId: clientId, payedDriverConfirmation: false });
