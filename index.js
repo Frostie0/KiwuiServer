@@ -153,6 +153,8 @@ socket.on('fetchMission', async (data) => {
         const { orderId } = data;
     
         const mission = await Mission.findOne({ orderId: orderId });
+
+        console.log(connectedUsersMap)
      
         if (!mission) {
             console.log(`Mission avec orderId ${orderId} non trouvée.`);
