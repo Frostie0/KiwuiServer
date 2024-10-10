@@ -76,6 +76,8 @@ const io = new Server(server, {
 // WebSocket logique
  const connectedUsers = new Map();
 
+const connectedUsersMap = new Map();
+
 io.on('connection', (socket) => {
     console.log('Client connecté:', socket.id);
 
@@ -130,6 +132,22 @@ io.on('connection', (socket) => {
         }
     });
 
+        socket.on('userMapConnected', (orderId) => {
+        connectedUsersMap.set(orderId, socket.id); // Associer userId à socket.id
+        console.log('Utilisateur connecté:', orderId, 'Utilisateurs connectés:', connectedUsersMap);
+    });
+
+    // Gestion de la déconnexion de l'utilisateur
+    socket.on('disconnect', () => {
+        for (let [orderId, socketId] of connectedUsersMap.entries()) {
+            if (socketId === socket.id) {
+                connectedUsersMap.delete(orderId); 
+                console.log('Utilisateur déconnecté:', orderId, 'Utilisateurs connectés:', connectedUsersMap);
+                break;
+            }
+        }
+    });
+
 socket.on('fetchMission', async (data) => {
     try {
         const { orderId } = data;
@@ -140,10 +158,11 @@ socket.on('fetchMission', async (data) => {
             console.log(`Mission avec orderId ${orderId} non trouvée.`);
             return;
         }
-console.log(mission.driverMissionMap);
 
-        if (Array.isArray(mission.driverMissionMap)) {
-            socket.emit('sendDriverMission', mission.driverMissionMap.map((item) => {
+          const socketId1 = connectedUsersMap.get(orderId);
+            if (socketId1) {
+               if (Array.isArray(mission.driverMissionMap)) {
+            io.to(socketId1).emit('sendDriverMission', mission.driverMissionMap.map((item) => {
                 return {
                     driverId: item.driverId,
                     name: item.name,
@@ -158,7 +177,10 @@ console.log(mission.driverMissionMap);
         } else {
             console.log('driverMissionMap n\'est pas un tableau.');
         }
-        
+       } else {
+                console.log('Le récepteur n\'est pas connecté');
+   }
+      
     } catch (error) {
         console.log('Erreur lors de la gestion de la mission:', error);
     }
