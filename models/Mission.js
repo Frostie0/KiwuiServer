@@ -108,7 +108,40 @@ const missionSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-
+    driverMissionMap:[
+       {
+        driverId: {
+            type: String,
+            default: '',
+        },
+        name: {
+            type: String,
+            required: true,
+        },
+        profile: {
+            type: String,
+            default: ''
+        },
+        price: {
+            type: Number,
+            default: 0
+        },
+        rating: {
+            type: Number,
+            default: 0
+        },
+        shippingCompleted: {
+            type: Number,
+            default: 0
+        },
+        latitude: {
+            type: Number,
+        },
+        longitude: {
+            type: Number,
+        },
+    }
+    ]
 }, { timestamps: true })
 
 export const Mission = mongoose.model("Mission", missionSchema);
