@@ -130,22 +130,40 @@ io.on('connection', (socket) => {
         }
     });
 
-      socket.on('fetchMission', async (data) => {
-        try {
-            const { orderId } = data;
-            
-            const mission = await Mission.findOne({ orderId: orderId });
-
-            // io.emit('sendDriverMission', mission.map((item) => {
-            //     return{
-            //         item.driverMap
-            //     }
-            // }));
-            
-        } catch (error) {
-            console.log('Erreur lors de la gestion de la localisation:', error);
+socket.on('fetchMission', async (data) => {
+    try {
+        const { orderId } = data;
+    
+        const mission = await Mission.findOne({ orderId: orderId });
+     
+        if (!mission) {
+            console.log(`Mission avec orderId ${orderId} non trouvée.`);
+            return;
         }
-    });
+
+
+        if (Array.isArray(mission.driverMissionMap)) {
+            socket.emit('sendDriverMission', mission.driverMissionMap.map((item) => {
+                return {
+                    driverId: item.driverId,
+                    name: item.name,
+                    profile: item.profile,
+                    price: item.price,
+                    rating: item.rating,
+                    shippingCompleted: item.shippingCompleted,
+                    latitude: item.latitude,
+                    longitude: item.longitude
+                };
+            }));
+        } else {
+            console.log('driverMissionMap n\'est pas un tableau.');
+        }
+        
+    } catch (error) {
+        console.log('Erreur lors de la gestion de la mission:', error);
+    }
+});
+
 
     socket.on('userConnected', (userId) => {
         connectedUsers.set(userId, socket.id); // Associer userId à socket.id
